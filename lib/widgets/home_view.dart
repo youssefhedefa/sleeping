@@ -24,9 +24,14 @@ class _HomeViewState extends State<HomeView> {
     player.play(AssetSource(audioLink));
   }
 
-  List<SalesData> graphData = [
+  List<SalesData> gsrGraphData = [
     SalesData('0', 0),
   ];
+
+  List<SalesData> ecgGraphData = [
+    SalesData('0', 0),
+  ];
+
   String time = '0';
   @override
   Widget build(BuildContext context) {
@@ -70,11 +75,18 @@ class _HomeViewState extends State<HomeView> {
                 time = (int.parse(time) + 1).toString();
                 if (snapshot.hasData) {
                   dynamic data = snapshot.data!.snapshot.value;
-                  graphData = [
-                    ...graphData,
+                  gsrGraphData = [
+                    ...gsrGraphData,
                     SalesData(
                       time,
                       double.tryParse(data['GSR']) ?? 0,
+                    ),
+                  ];
+                  ecgGraphData = [
+                    ...ecgGraphData,
+                    SalesData(
+                      time,
+                      double.tryParse(data['ECG']) ?? 0,
                     ),
                   ];
                   if (data['Apnea']) {
@@ -105,7 +117,10 @@ class _HomeViewState extends State<HomeView> {
                   return Column(
                     children: [
                       GraphView(
-                        graphData: graphData,
+                        graphData: ecgGraphData,
+                      ),
+                      Text(
+                          'ECG: ${data['ECG']}',
                       ),
                       const CustomDivider(),
                       RadialChar(
@@ -128,6 +143,13 @@ class _HomeViewState extends State<HomeView> {
                       const CustomDivider(),
                       TempLinear(
                         value: double.tryParse(data['Temp']) ?? 0,
+                      ),
+                      const CustomDivider(),
+                      GraphView(
+                        graphData: gsrGraphData,
+                      ),
+                      Text(
+                        'GSR: ${data['GSR']}',
                       ),
                     ],
                   );
